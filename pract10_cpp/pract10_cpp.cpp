@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <Windows.h>
 #include <math.h>
 
@@ -8,22 +8,15 @@ void Inkrement(DWORD ID) {
 	int a = 0;
 	while (true) {
 		a++;
-		cout << a << " " << ID << endl;
-		Sleep(1000);
 	}
 }
 
 void Fibonachi(DWORD ID) {
 	long long f1 = 0, f2 = 1;
-	int iter = 0;
 	while (true) {
 		int tmp = f1 + f2;
 		f1 = f2;
 		f2 = tmp;
-
-		iter++;
-		cout << iter << " " << ID << endl;
-		Sleep(1000);
 	}
 }
 
@@ -32,9 +25,6 @@ void Kvadraty(DWORD ID) {
 	while (true) {
 		result = pow(num, 2);
 		num++;
-
-		cout << num << " " << ID << endl;
-		Sleep(1000);
 	}
 }
 
