@@ -14,7 +14,7 @@ void Inkrement(DWORD ID) {
 void Fibonachi(DWORD ID) {
 	long long f1 = 0, f2 = 1;
 	while (true) {
-		int tmp = f1 + f2;
+		long long tmp = f1 + f2;
 		f1 = f2;
 		f2 = tmp;
 	}
@@ -48,9 +48,9 @@ int main()
 		return GetLastError();
 	}
 
-	IThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Inkrement, (void*)IDI, 0, &IDI);
-	FThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Fibonachi, (void*)IDF, 0, &IDF);
-	KThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Kvadraty, (void*)IDK, 0, &IDK);
+	IThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Inkrement, (DWORD*)IDI, 0, &IDI);
+	FThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Fibonachi, (DWORD*)IDF, 0, &IDF);
+	KThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Kvadraty, (DWORD*)IDK, 0, &IDK);
 
 	if (IThread == 0 || FThread == 0 || KThread == 0)
 		return GetLastError();
