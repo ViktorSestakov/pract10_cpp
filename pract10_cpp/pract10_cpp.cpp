@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int iter[3]{0,0,0};
+volatile long long iter[4]{0,0,0,0};
 
 void Inkrement() {
 	int a = 0;
@@ -37,6 +37,15 @@ void Kvadraty() {
 	}
 }
 
+void Nagruzchik() {
+	int a = 0;
+	while (true) {
+		a++;
+
+		iter[3]++;
+	}
+}
+
 HANDLE threads[4];
 DWORD ids[4];
 
@@ -55,19 +64,6 @@ void Seeker(HANDLE thread, DWORD id) {
 		iter[2] = 0;
 	}
 	ResumeThread(thread);
-}
-
-void nagruzchik() {
-	SetThreadPriorityBoost(threads[3], FALSE);
-	SetThreadPriority(threads[3], THREAD_PRIORITY_HIGHEST);
-	Sleep(3000);
-	SetThreadPriority(threads[0], THREAD_PRIORITY_IDLE);
-	SetThreadPriority(threads[1], THREAD_PRIORITY_IDLE);
-	SetThreadPriority(threads[2], THREAD_PRIORITY_IDLE);
-	Sleep(3000);
-	SetThreadPriority(threads[3], THREAD_PRIORITY_NORMAL);
-
-	SetThreadPriorityBoost(threads[3], TRUE);
 }
 
 void menu_vibor() {
@@ -134,7 +130,15 @@ void menu_vibor() {
 			}
 			break;
 		case 0:
-			threads[3] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)nagruzchik, NULL, 0, &ids[3]);
+			threads[3] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Nagruzchik, NULL, 0, &ids[3]);
+			if (!SetThreadPriority(threads[3], THREAD_PRIORITY_HIGHEST)) {
+				cout << "Failed to set priority to Thread" << endl;
+				cout << GetLastError() << endl;
+			}
+			if (!SetThreadPriorityBoost(threads[3], FALSE)) {
+				cout << "Failed to set priority to Thread" << endl;
+				cout << GetLastError() << endl;
+			}
 			break;
 		case 10:
 			if (!TerminateThread(threads[0], 0)) cout << GetLastError() << endl;
@@ -159,6 +163,14 @@ void menu() {
 	while (true) {
 		Sleep(1000);
 		system("cls");
+
+		if (iter[3] > (iter[2] + iter[1] + iter[0])) {
+			if (!SetThreadPriority(threads[3], THREAD_PRIORITY_NORMAL)) {
+				cout << "Failed to set priority to Thread" << endl;
+				cout << GetLastError() << endl;
+			}
+		}
+
 		cout << "Кол-во итераций в секундну" << endl;
 		cout << "Поток 1 - инкремент: ";
 		Seeker(threads[0], ids[0]);
@@ -172,12 +184,15 @@ void menu() {
 		Seeker(threads[2], ids[2]);
 		cout << " | Приоритет = " << GetThreadPriority(threads[2]) << endl;
 		iter[2] = 0;
+
 		cout << endl;
 		if (GetThreadPriority(threads[3]) == 2 || GetThreadPriority(threads[3]) == 0) {
 			cout << "Нагрузчик | Приоритет = " << GetThreadPriority(threads[3]) << endl;
+			iter[3] = 0;
 		}
 		else {
 			cout << "Нагрузчик | Приоритет = неактивен" << endl;
+			iter[3] = 0;
 		}
 		cout << endl;
 
